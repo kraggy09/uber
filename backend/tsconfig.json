@@ -6,8 +6,9 @@
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true ,
+    "allowSyntheticDefaultImports": true,
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*","src/types/**/*"],
   "exclude": ["node_modules", "dist"]
 }
