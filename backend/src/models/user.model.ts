@@ -12,7 +12,7 @@ export interface IUser extends Document {
 }
 
 interface IUserModel extends Model<IUser> {
-  hashPassword(password: string): Promise<string>; // Ensure it's a Promise
+  hashPassword(password: string): Promise<string>;
 }
 
 const userSchema = new Schema<IUser>(
@@ -41,7 +41,7 @@ const userSchema = new Schema<IUser>(
 
 userSchema.methods.generateAuthToken = function (): string {
   const token = jwt.sign({ _id: this._id }, process.env.JWT_TOKEN as string, {
-    expiresIn: "1h",
+    expiresIn: "24h",
   });
   return token;
 };
@@ -53,7 +53,6 @@ userSchema.methods.comparePassword = async function (
   return isMatch;
 };
 
-// Fix: hashPassword should return a Promise, using bcrypt.hash
 userSchema.statics.hashPassword = function (password: string): Promise<string> {
   return bcrypt.hash(password, 10);
 };

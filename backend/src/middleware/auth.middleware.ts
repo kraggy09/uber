@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import ApiResponse from "../utils/ApiResponse";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequests";
+import Driver from "../models/driver.model";
 
 export const authUser = async (
   req: AuthenticatedRequest,
@@ -22,6 +23,30 @@ export const authUser = async (
     }
 
     req.user = user;
+    next();
+  } catch (error: any) {
+    return ApiResponse(res, 401, false, error.message || "Bad Token");
+  }
+};
+
+export const authDriver = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const token = req.cookies.token || req?.headers?.authorization?.split(" ")[1];
+  if (!token) {
+    return ApiResponse(res, 401, false, "No token found");
+  }
+
+  try {
+    const decoded: any = jwt.verify(token, process.env.JWT_TOKEN as string);
+    const driver = await Driver.findById(decoded._id);
+    if (!driver) {
+      return ApiResponse(res, 404, false, "Driver not found");
+    }
+
+    req.driver = driver;
     next();
   } catch (error: any) {
     return ApiResponse(res, 401, false, error.message || "Bad Token");
